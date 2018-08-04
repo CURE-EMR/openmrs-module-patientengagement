@@ -9,6 +9,10 @@
  */
 package org.openmrs.module.patientengagement.api;
 
+import java.io.IOException;
+
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.client.ClientProtocolException;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
@@ -21,10 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
  * moduleApplicationContext.xml on how it is wired up.
  */
 public interface PatientEngagementService extends OpenmrsService {
-	
+
 	/**
-	 * Returns an item by uuid. It can be called by any authenticated user. It is fetched in read
-	 * only transaction.
+	 * Returns an item by uuid. It can be called by any authenticated user. It
+	 * is fetched in read only transaction.
 	 * 
 	 * @param uuid
 	 * @return
@@ -33,10 +37,11 @@ public interface PatientEngagementService extends OpenmrsService {
 	@Authorized()
 	@Transactional(readOnly = true)
 	Item getItemByUuid(String uuid) throws APIException;
-	
+
 	/**
-	 * Saves an item. Sets the owner to superuser, if it is not set. It can be called by users with
-	 * this module's privilege. It is executed in a transaction.
+	 * Saves an item. Sets the owner to superuser, if it is not set. It can be
+	 * called by users with this module's privilege. It is executed in a
+	 * transaction.
 	 * 
 	 * @param item
 	 * @return
@@ -45,4 +50,6 @@ public interface PatientEngagementService extends OpenmrsService {
 	@Authorized(PatientEngagementConfig.MODULE_PRIVILEGE)
 	@Transactional
 	Item saveItem(Item item) throws APIException;
+
+	void sendAppointmentReminders() throws AuthenticationException, ClientProtocolException, IOException;
 }

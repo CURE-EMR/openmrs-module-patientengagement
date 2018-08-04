@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <module configVersion="1.2">
-	
+
 	<!-- Base Module Properties -->
 	<id>${project.parent.artifactId}</id>
 	<name>${project.parent.name}</name>
@@ -9,83 +9,83 @@
 	<package>org.openmrs.module.patientengagement</package>
 	<author>openmrs</author>
 	<description>
-			${project.parent.description}
+		${project.parent.description}
 	</description>
 
-	<activator>org.openmrs.module.patientengagement.PatientEngagementActivator</activator>
-	
+	<activator>org.openmrs.module.patientengagement.PatientEngagementActivator
+	</activator>
+
 	<!-- <updateURL>https://modules.openmrs.org/modules/download/@MODULE_ID@/update.rdf</updateURL> -->
 	<!-- /Base Module Properties -->
-	
+
 	<require_version>1.11.6</require_version>
-	
+	<require_modules>
+		<require_module version="1.1-SNAPSHOT">org.openmrs.module.appointments
+		</require_module>
+	</require_modules>
+
 	<!-- Extensions -->
 	<extension>
 		<point>org.openmrs.admin.list</point>
-		<class>org.openmrs.module.patientengagement.extension.html.AdminList</class>
+		<class>org.openmrs.module.patientengagement.extension.html.AdminList
+		</class>
 	</extension>
 
 	<aware_of_modules>
 		<aware_of_module>org.openmrs.module.legacyui</aware_of_module>
 	</aware_of_modules>
-	
-	
-	<!-- AOP
-	<advice>
-		<point>org.openmrs.api.FormService</point>
-		<class>@MODULE_PACKAGE@.advice.DuplicateFormAdvisor</class>
-	</advice>
-	 /AOP -->
-	
-	
-	<!-- Required Privileges 
-	<privilege>
-		<name>Form Entry</name>
-		<description>Allows user to access Form Entry pages/functions</description>
-	</privilege>
-	 /Required Privileges -->
 
 
-	<!-- Required Global Properties 
+	<!-- AOP <advice> <point>org.openmrs.api.FormService</point> <class>@MODULE_PACKAGE@.advice.DuplicateFormAdvisor</class> 
+		</advice> /AOP -->
+
+
+	<!-- Required Privileges <privilege> <name>Form Entry</name> <description>Allows 
+		user to access Form Entry pages/functions</description> </privilege> /Required 
+		Privileges -->
+
+
 	<globalProperty>
-		<property>@MODULE_ID@.someProperty</property>
-		<defaultValue></defaultValue>
+		<property>patientengagement.messagingConfig</property>
+		<defaultValue>[{\"serviceUUID\":\"571a3908-d942-4d2f-b59d-c473db921b6e\",\"daysBefore\":2,\"messageText\":\"You
+			have a Surgery appointment\"},
+			{\"serviceUUID\":\"9a1eb682-2241-4dc0-ab76-e1f7be2c65ec\",\"daysBefore\":1,\"messageText\":\"You
+			have a Cast appointment\"}]</defaultValue>
 		<description>
-			A description of the global property goes here.  The description
-			should explain enough for administrators to understand the purpose
-			and possible values for the global property.
+			A JSON configuration showing the number of days before
+			sending
+			an SMS reminder for each appointment service and the actual
+			message
+			text to send.
 		</description>
 	</globalProperty>
-	/Required Global Properties -->
-	
-	<!--
-	<dwr>
-		<allow>
-			<create creator="new" javascript="DWRFormEntryService">
-				<param name="class" value="org.openmrs.module.@MODULE_ID@.web.DWRFormEntryService"/>
-				<include method="enterForm"/>
-			</create>
-		</allow>
 
-		<signatures>
-			<![CDATA[
-			import @MODULE_PACKAGE@.web.DWRFormEntryService;
-			DWRFormEntryService.enterForm(Integer patientId, Integer formId, boolean useEncounter, List<String> fields);
-			]]>
-		</signatures>	
-	</dwr>
-	-->
-	
+	<globalProperty>
+		<property>patientengagement.postURL</property>
+		<defaultValue>https://api.textit.in/api/v2/broadcasts.json</defaultValue>
+		<description>RapidPro URL to post to</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>patientengagement.Authorization</property>
+		<defaultValue></defaultValue>
+		<description>RapidPro API Token</description>
+	</globalProperty>
+
+	<!-- <dwr> <allow> <create creator="new" javascript="DWRFormEntryService"> 
+		<param name="class" value="org.openmrs.module.@MODULE_ID@.web.DWRFormEntryService"/> 
+		<include method="enterForm"/> </create> </allow> <signatures> <![CDATA[ import 
+		@MODULE_PACKAGE@.web.DWRFormEntryService; DWRFormEntryService.enterForm(Integer 
+		patientId, Integer formId, boolean useEncounter, List<String> fields); ]]> 
+		</signatures> </dwr> -->
+
 	<!-- Servlets -->
 	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> 
-	<servlet>
-		<servlet-name>formDownload</servlet-name>
-		<servlet-class>@MODULE_PACKAGE@.web.FormDownloadServlet</servlet-class>
-	</servlet>
-	-->
+		<servlet> <servlet-name>formDownload</servlet-name> <servlet-class>@MODULE_PACKAGE@.web.FormDownloadServlet</servlet-class> 
+		</servlet> -->
 	<!-- /Servlets -->
-	
-	
+
+
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
 	<messages>
@@ -101,6 +101,6 @@
 		<file>messages_es.properties</file>
 	</messages>
 	<!-- /Internationalization -->
-	
+
 </module>
 
