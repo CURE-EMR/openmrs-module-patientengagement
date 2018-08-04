@@ -54,6 +54,14 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 		this.userService = userService;
 	}
 	
+	public void setAs(AppointmentsService as) {
+		this.as = as;
+	}
+	
+	public void setAss(AppointmentServiceService ass) {
+		this.ass = ass;
+	}
+	
 	@Override
 	public Item getItemByUuid(String uuid) throws APIException {
 		return dao.getItemByUuid(uuid);
@@ -77,8 +85,7 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 			List<Appointment> appointments = as.getAllFutureAppointmentsForService(service);
 			
 			for (Appointment appointment : appointments) {
-				if (Days.daysBetween(new DateTime(appointment.getStartDateTime()), new DateTime(new Date())).getDays() == messagingConfig
-				        .getDaysBefore()) {
+				if (Days.daysBetween(new DateTime(appointment.getStartDateTime()), new DateTime(new Date())).getDays() == messagingConfig.getDaysBefore()) {
 					String phone = appointment.getPatient().getAttribute("mobilePhone").getValue();
 					if (phone != null && phone.length() > 0) {
 						MessagingUtil.postMessage(phone, messagingConfig.getMessageText());
