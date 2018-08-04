@@ -62,7 +62,7 @@
 
 	<globalProperty>
 		<property>patientengagement.postURL</property>
-		<defaultValue>https://api.textit.in/api/v2/broadcasts.json</defaultValue>
+		<defaultValue></defaultValue>
 		<description>RapidPro URL to post to</description>
 	</globalProperty>
 

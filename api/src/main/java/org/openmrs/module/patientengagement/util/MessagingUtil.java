@@ -41,8 +41,7 @@ public class MessagingUtil {
 		return list;
 	}
 	
-	public static void postMessage(String phone, String messageText) throws ClientProtocolException, IOException,
-	        AuthenticationException {
+	public static void postMessage(String phone, String messageText) throws ClientProtocolException, IOException, AuthenticationException {
 		
 		String json = "{\r\n    \"urns\": [\"tel:" + phone + "\"], \r\n    \"text\": " + messageText + "\r\n}";
 		
@@ -50,8 +49,7 @@ public class MessagingUtil {
 		httpPost.setEntity(new StringEntity(json));
 		httpPost.setHeader("Accept", "application/json");
 		httpPost.setHeader("Content-type", "application/json");
-		httpPost.setHeader("Authorization",
-		    Context.getAdministrationService().getGlobalProperty("patientengagement.Authorization"));
+		httpPost.setHeader("Authorization", Context.getAdministrationService().getGlobalProperty("patientengagement.Authorization"));
 		
 		CloseableHttpClient client = HttpClients.createDefault();
 		client.execute(httpPost);
