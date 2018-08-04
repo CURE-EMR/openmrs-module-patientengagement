@@ -13,7 +13,6 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.patientengagement.MessagingConfig;
 
@@ -42,19 +41,19 @@ public class MessagingUtil {
 		return list;
 	}
 	
-	public static void postMessage(String phone, String messageText) throws ClientProtocolException, IOException, AuthenticationException {
-		AdministrationService as = Context.getAdministrationService();
-		CloseableHttpClient client = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost(as.getGlobalProperty("patientengagement.postUR"));
+	public static void postMessage(String phone, String messageText) throws ClientProtocolException, IOException,
+	        AuthenticationException {
 		
 		String json = "{\r\n    \"urns\": [\"tel:" + phone + "\"], \r\n    \"text\": " + messageText + "\r\n}";
-		StringEntity entity = new StringEntity(json);
-		httpPost.setEntity(entity);
 		
+		HttpPost httpPost = new HttpPost(Context.getAdministrationService().getGlobalProperty("patientengagement.postUR"));
+		httpPost.setEntity(new StringEntity(json));
 		httpPost.setHeader("Accept", "application/json");
 		httpPost.setHeader("Content-type", "application/json");
-		httpPost.setHeader("Authorization", as.getGlobalProperty("patientengagement.Authorization"));
+		httpPost.setHeader("Authorization",
+		    Context.getAdministrationService().getGlobalProperty("patientengagement.Authorization"));
 		
+		CloseableHttpClient client = HttpClients.createDefault();
 		client.execute(httpPost);
 		client.close();
 	}

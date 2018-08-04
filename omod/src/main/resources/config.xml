@@ -20,7 +20,7 @@
 
 	<require_version>1.11.6</require_version>
 	<require_modules>
-		<require_module version="1.1-SNAPSHOT">org.openmrs.module.appointments
+		<require_module version="1.0-SNAPSHOT">org.openmrs.module.appointments
 		</require_module>
 	</require_modules>
 

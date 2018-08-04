@@ -54,7 +54,7 @@
 
 	<properties>
 		<openmrsPlatformVersion>1.11.6</openmrsPlatformVersion>
-		<appointmentsVersion>1.1-SNAPSHOT</appointmentsVersion>
+		<appointmentsVersion>1.0-SNAPSHOT</appointmentsVersion>
 		<httpclientVersion>4.0.1</httpclientVersion>
 	</properties>
 
