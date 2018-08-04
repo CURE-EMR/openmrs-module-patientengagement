@@ -35,6 +35,8 @@
         <property name="target">
             <bean class="org.openmrs.module.patientengagement.api.impl.PatientEngagementServiceImpl">
                 <property name="dao" ref="patientengagement.PatientEngagementDao" />
+                 <property name="as" ref="org.openmrs.module.appointments.service.AppointmentsService" />
+                  <property name="ass" ref="org.openmrs.module.appointments.service.AppointmentServiceService" />
             </bean>
         </property>
         <property name="preInterceptors">
