@@ -10,18 +10,9 @@
 package org.openmrs.module.patientengagement;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openmrs.User;
-import org.openmrs.api.UserService;
-import org.openmrs.module.patientengagement.Item;
-import org.openmrs.module.patientengagement.api.dao.PatientEngagementDao;
 import org.openmrs.module.patientengagement.api.impl.PatientEngagementServiceImpl;
-import static org.mockito.Mockito.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 
 /**
  * This is a unit test, which verifies logic in PatientEngagementService. It doesn't extend
@@ -32,32 +23,8 @@ public class PatientEngagementServiceTest {
 	@InjectMocks
 	PatientEngagementServiceImpl basicModuleService;
 	
-	@Mock
-	PatientEngagementDao dao;
-	
-	@Mock
-	UserService userService;
-	
 	@Before
 	public void setupMocks() {
 		MockitoAnnotations.initMocks(this);
-	}
-	
-	@Test
-	public void saveItem_shouldSetOwnerIfNotSet() {
-		//Given
-		Item item = new Item();
-		item.setDescription("some description");
-		
-		when(dao.saveItem(item)).thenReturn(item);
-		
-		User user = new User();
-		when(userService.getUser(1)).thenReturn(user);
-		
-		//When
-		basicModuleService.saveItem(item);
-		
-		//Then
-		assertThat(item, hasProperty("owner", is(user)));
 	}
 }

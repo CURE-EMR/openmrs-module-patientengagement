@@ -17,28 +17,38 @@ import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.ClientProtocolException;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.openmrs.api.APIException;
-import org.openmrs.api.UserService;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.appointments.model.Appointment;
 import org.openmrs.module.appointments.model.AppointmentService;
 import org.openmrs.module.appointments.service.AppointmentServiceService;
 import org.openmrs.module.appointments.service.AppointmentsService;
-import org.openmrs.module.patientengagement.Item;
 import org.openmrs.module.patientengagement.MessagingConfig;
 import org.openmrs.module.patientengagement.api.PatientEngagementService;
 import org.openmrs.module.patientengagement.api.dao.PatientEngagementDao;
 import org.openmrs.module.patientengagement.util.MessagingUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+/**
+ * Implementation of the main service of this module, which is exposed for other modules. See
+ * moduleApplicationContext.xml on how it is wired up.
+ * 
+ * @author Bailly RURANGIRWA
+ */
+@Service("patientEngagementService")
 public class PatientEngagementServiceImpl extends BaseOpenmrsService implements PatientEngagementService {
 	
-	PatientEngagementDao dao;
+	private static final Logger log = LoggerFactory.getLogger(PatientEngagementServiceImpl.class);
 	
-	UserService userService;
+	@Autowired
+	AppointmentServiceService ass;
 	
+	@Autowired
 	AppointmentsService as;
 	
-	AppointmentServiceService ass;
+	PatientEngagementDao dao;
 	
 	/**
 	 * Injected in moduleApplicationContext.xml
@@ -48,51 +58,34 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 	}
 	
 	/**
-	 * Injected in moduleApplicationContext.xml
+	 * Gets a list of MessagingConfig objects from calling {@link #getMessagingConfig()}. Each
+	 * configuration object from that list is used to read the service configured, the number of
+	 * days before the appointment day and the actual message to send. We then call
+	 * {@link #postMessage()} of MessagingUtil to send actual the message
 	 */
-	public void setUserService(UserService userService) {
-		this.userService = userService;
-	}
-	
-	public void setAs(AppointmentsService as) {
-		this.as = as;
-	}
-	
-	public void setAss(AppointmentServiceService ass) {
-		this.ass = ass;
-	}
-	
-	@Override
-	public Item getItemByUuid(String uuid) throws APIException {
-		return dao.getItemByUuid(uuid);
-	}
-	
-	@Override
-	public Item saveItem(Item item) throws APIException {
-		if (item.getOwner() == null) {
-			item.setOwner(userService.getUser(1));
-		}
-		
-		return dao.saveItem(item);
-	}
 	
 	@Override
 	public void sendAppointmentReminders() throws AuthenticationException, ClientProtocolException, IOException {
 		
-		List<MessagingConfig> configs = MessagingUtil.getMessagingConfig();
-		for (MessagingConfig messagingConfig : configs) {
-			AppointmentService service = ass.getAppointmentServiceByUuid(messagingConfig.getServiceUUID());
-			List<Appointment> appointments = as.getAllFutureAppointmentsForService(service);
-			
-			for (Appointment appointment : appointments) {
-				if (Days.daysBetween(new DateTime(appointment.getStartDateTime()), new DateTime(new Date())).getDays() == messagingConfig.getDaysBefore()) {
-					String phone = appointment.getPatient().getAttribute("mobilePhone").getValue();
-					if (phone != null && phone.length() > 0) {
-						MessagingUtil.postMessage(phone, messagingConfig.getMessageText());
+		try {
+			List<MessagingConfig> configs = MessagingUtil.getMessagingConfig();
+			for (MessagingConfig messagingConfig : configs) {
+				AppointmentService service = ass.getAppointmentServiceByUuid(messagingConfig.getServiceUUID());
+				List<Appointment> appointments = as.getAllFutureAppointmentsForService(service);
+				String phone = null;
+				for (Appointment appointment : appointments) {
+					if (Days.daysBetween(new DateTime(new Date()), new DateTime(appointment.getStartDateTime())).getDays() == messagingConfig.getDaysBefore() - 1) {
+						phone = appointment.getPatient().getAttribute("mobilePhone").getValue();
+						if (phone != null && phone.length() > 0) {
+							MessagingUtil.postMessage(phone, messagingConfig.getMessageText());
+						}
 					}
 				}
+				
 			}
-			
+		}
+		catch (Exception e) {
+			log.error("There was an error sending appointment reminders" + e);
 		}
 		
 	}

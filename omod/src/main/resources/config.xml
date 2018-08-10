@@ -20,7 +20,7 @@
 
 	<require_version>1.11.6</require_version>
 	<require_modules>
-		<require_module version="1.0-SNAPSHOT">org.openmrs.module.appointments
+		<require_module version="1.1-SNAPSHOT">org.openmrs.module.appointments
 		</require_module>
 	</require_modules>
 
@@ -47,16 +47,11 @@
 
 	<globalProperty>
 		<property>patientengagement.messagingConfig</property>
-		<defaultValue>[{\"serviceUUID\":\"571a3908-d942-4d2f-b59d-c473db921b6e\",\"daysBefore\":2,\"messageText\":\"You
-			have a Surgery appointment\"},
-			{\"serviceUUID\":\"9a1eb682-2241-4dc0-ab76-e1f7be2c65ec\",\"daysBefore\":1,\"messageText\":\"You
-			have a Cast appointment\"}]</defaultValue>
+		<defaultValue></defaultValue>
 		<description>
 			A JSON configuration showing the number of days before
-			sending
-			an SMS reminder for each appointment service and the actual
-			message
-			text to send.
+			sending an SMS reminder for each appointment service and the actual
+			message text to send.
 		</description>
 	</globalProperty>
 
