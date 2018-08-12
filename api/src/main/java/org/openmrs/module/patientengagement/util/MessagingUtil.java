@@ -64,7 +64,7 @@ public class MessagingUtil {
 			log.error("There was an error parsing the JSON configuration string from patientengagement.messagingConfig global property: " + e);
 		}
 		catch (JsonMappingException e) {
-			log.error("There was an error parsing the JSON configuration string from patientengagement.messagingConfig global property: " + e);
+			log.error("There was an error parsing the JSON configuration string from patientengagement.messagingConfig global property. Please, check the mappings of the JSON keys to MessagingConfig properties " + e);
 		}
 		catch (IOException e) {
 			log.error("There was an error parsing the JSON configuration string from patientengagement.messagingConfig global property: " + e);

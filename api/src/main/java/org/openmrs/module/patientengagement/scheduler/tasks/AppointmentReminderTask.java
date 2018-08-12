@@ -16,7 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A scheduled task for sending appointment reminders via SMS
+ * A scheduled task for sending appointment reminders via SMS. Scheduled Tasks are regularly timed
+ * tasks that can run every few seconds, every day, every week, etc. See Admin-->Manager Scheduled
+ * Tasks for the administration of them.
  * 
  * @author Bailly RURANGIRWA
  */
