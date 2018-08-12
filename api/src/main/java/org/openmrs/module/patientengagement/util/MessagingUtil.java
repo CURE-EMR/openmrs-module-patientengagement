@@ -25,6 +25,8 @@ import org.codehaus.jackson.type.TypeReference;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.patientengagement.MessagingConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for patientengagement module. It includes methods for connecting to RapidPro for
@@ -34,6 +36,8 @@ import org.openmrs.module.patientengagement.MessagingConfig;
  * @author Bailly RURANGIRWA
  */
 public class MessagingUtil {
+	
+	private static final Logger log = LoggerFactory.getLogger(MessagingUtil.class);
 	
 	//Get the admin service for reading global properties
 	private static AdministrationService adminService = Context.getAdministrationService();
@@ -57,13 +61,13 @@ public class MessagingUtil {
 			
 		}
 		catch (JsonGenerationException e) {
-			e.printStackTrace();
+			log.error("There was an error parsing the JSON configuration string from patientengagement.messagingConfig global property: " + e);
 		}
 		catch (JsonMappingException e) {
-			e.printStackTrace();
+			log.error("There was an error parsing the JSON configuration string from patientengagement.messagingConfig global property: " + e);
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			log.error("There was an error parsing the JSON configuration string from patientengagement.messagingConfig global property: " + e);
 		}
 		return list;
 	}
