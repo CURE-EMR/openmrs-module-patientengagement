@@ -61,7 +61,7 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 	 * Gets a list of MessagingConfig objects from calling {@link #getMessagingConfig()}. Each
 	 * configuration object from that list is used to read the service configured, the number of
 	 * days before the appointment day and the actual message to send. We then call
-	 * {@link #postMessage()} of MessagingUtil to send actual the message
+	 * {@link #postMessage()} of MessagingUtil to send the actual message
 	 */
 	
 	@Override
