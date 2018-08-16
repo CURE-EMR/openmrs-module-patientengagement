@@ -55,9 +55,18 @@
 	<properties>
 		<openmrsPlatformVersion>1.11.6</openmrsPlatformVersion>
 		<httpclientVersion>4.0.1</httpclientVersion>
+		<appointmentsVersion>1.1-SNAPSHOT</appointmentsVersion>
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>appointments-api</artifactId>
+			<version>${appointmentsVersion}</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
 		<dependency>

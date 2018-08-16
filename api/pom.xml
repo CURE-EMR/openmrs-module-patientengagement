@@ -11,18 +11,4 @@
 	<packaging>jar</packaging>
 	<name>Patient Engagement  API</name>
 	<description>API project for Patient Engagement </description>
-
-	<properties>
-		<appointmentsVersion>1.1-SNAPSHOT</appointmentsVersion>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>appointments-api</artifactId>
-			<version>${appointmentsVersion}</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
 </project>
