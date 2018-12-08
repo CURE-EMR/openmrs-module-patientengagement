@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AppointmentReminderTask extends AbstractTask {
 	
-	// Logger 
+	// Logger
 	private static final Logger log = LoggerFactory.getLogger(AppointmentReminderTask.class);
 	
 	@Override

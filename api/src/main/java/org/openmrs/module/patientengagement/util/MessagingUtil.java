@@ -22,7 +22,6 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.patientengagement.MessagingConfig;
 import org.slf4j.Logger;
@@ -39,13 +38,9 @@ public class MessagingUtil {
 	
 	private static final Logger log = LoggerFactory.getLogger(MessagingUtil.class);
 	
-	//Get the admin service for reading global properties
-	private static AdministrationService adminService = Context.getAdministrationService();
-	
 	/**
-	 * Reads configuration for sending appointment reminders form
-	 * "patientengagement.messagingConfig" global property and creates a list of MessagingConfig
-	 * instances
+	 * Reads configuration for sending appointment reminders form "patientengagement.messagingConfig"
+	 * global property and creates a list of MessagingConfig instances
 	 * 
 	 * @return a list of MessagingConfig objects
 	 */
@@ -56,7 +51,7 @@ public class MessagingUtil {
 		
 		try {
 			
-			String json = adminService.getGlobalProperty("patientengagement.messagingConfig");
+			String json = Context.getAdministrationService().getGlobalProperty("patientengagement.messagingConfig");
 			list = mapper.readValue(json, new TypeReference<List<MessagingConfig>>() {});
 			
 		}
@@ -73,8 +68,7 @@ public class MessagingUtil {
 	}
 	
 	/**
-	 * Creates a JSON post request to a configured URL from "patientengagement.postURL" global
-	 * property.
+	 * Creates a JSON post request to a configured URL from "patientengagement.postURL" global property.
 	 * 
 	 * @param phone The phone number to send the message to
 	 * @param messageText The actual message to send
@@ -86,11 +80,11 @@ public class MessagingUtil {
 		
 		String json = "{\r\n    \"urns\": [\"tel:\"" + phone + "\"], \r\n    \"text\": \"" + messageText + "\"\r\n}";
 		
-		HttpPost httpPost = new HttpPost(adminService.getGlobalProperty("patientengagement.postURL"));
+		HttpPost httpPost = new HttpPost(Context.getAdministrationService().getGlobalProperty("patientengagement.postURL"));
 		httpPost.setEntity(new StringEntity(json));
 		httpPost.setHeader("Accept", "application/json");
 		httpPost.setHeader("Content-type", "application/json");
-		httpPost.setHeader("Authorization", adminService.getGlobalProperty("patientengagement.Authorization"));
+		httpPost.setHeader("Authorization", Context.getAdministrationService().getGlobalProperty("patientengagement.Authorization"));
 		
 		CloseableHttpClient client = HttpClients.createDefault();
 		client.execute(httpPost);

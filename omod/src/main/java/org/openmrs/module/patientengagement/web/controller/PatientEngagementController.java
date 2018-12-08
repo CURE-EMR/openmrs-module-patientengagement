@@ -28,8 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * This class configured as controller using annotation and mapped with the URL of
  * 'module/${rootArtifactid}/${rootArtifactid}Link.form'.
  */
-@Controller("${rootrootArtifactid}.PatientEngagementController")
-@RequestMapping(value = "module/${rootArtifactid}/${rootArtifactid}.form")
+@Controller
 public class PatientEngagementController {
 	
 	/** Logger for this class and subclasses */
@@ -39,7 +38,7 @@ public class PatientEngagementController {
 	UserService userService;
 	
 	/** Success form view name */
-	private final String VIEW = "/module/${rootArtifactid}/${rootArtifactid}";
+	private final String VIEW = "/module/patientengagement/patientengagement";
 	
 	/**
 	 * Initially called after the getUsers method to get the landing form name
@@ -60,8 +59,7 @@ public class PatientEngagementController {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST)
-	public String onPost(HttpSession httpSession, @ModelAttribute("anyRequestObject") Object anyRequestObject,
-	        BindingResult errors) {
+	public String onPost(HttpSession httpSession, @ModelAttribute("anyRequestObject") Object anyRequestObject, BindingResult errors) {
 		
 		if (errors.hasErrors()) {
 			// return error view
@@ -72,14 +70,15 @@ public class PatientEngagementController {
 	
 	/**
 	 * This class returns the form backing object. This can be a string, a boolean, or a normal java
-	 * pojo. The bean name defined in the ModelAttribute annotation and the type can be just defined
-	 * by the return type of this method
+	 * pojo. The bean name defined in the ModelAttribute annotation and the type can be just defined by
+	 * the return type of this method
 	 */
 	@ModelAttribute("users")
 	protected List<User> getUsers() throws Exception {
 		List<User> users = userService.getAllUsers();
 		
-		// this object will be made available to the jsp page under the variable name
+		// this object will be made available to the jsp page under the variable
+		// name
 		// that is defined in the @ModuleAttribute tag
 		return users;
 	}
