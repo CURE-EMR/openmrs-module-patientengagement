@@ -39,8 +39,9 @@ public class MessagingUtil {
 	private static final Logger log = LoggerFactory.getLogger(MessagingUtil.class);
 	
 	/**
-	 * Reads configuration for sending appointment reminders form "patientengagement.messagingConfig"
-	 * global property and creates a list of MessagingConfig instances
+	 * Reads configuration for sending appointment reminders form
+	 * "patientengagement.messagingConfig" global property and creates a list of MessagingConfig
+	 * instances
 	 * 
 	 * @return a list of MessagingConfig objects
 	 */
@@ -68,7 +69,8 @@ public class MessagingUtil {
 	}
 	
 	/**
-	 * Creates a JSON post request to a configured URL from "patientengagement.postURL" global property.
+	 * Creates a JSON post request to a configured URL from "patientengagement.postURL" global
+	 * property.
 	 * 
 	 * @param phone The phone number to send the message to
 	 * @param messageText The actual message to send
@@ -78,8 +80,8 @@ public class MessagingUtil {
 	 */
 	public static void postMessage(String phone, String messageText) throws ClientProtocolException, IOException, AuthenticationException {
 		
-		String json = "{\r\n    \"urns\": [\"tel:\"" + phone + "\"], \r\n    \"text\": \"" + messageText + "\"\r\n}";
-		
+		String fixedPhoneNumber = phone.replaceFirst("0", "+63");
+		String json = "{ \"urns\": [ \"tel:" + fixedPhoneNumber + "\"], \"text\": \"" + messageText + "\" }";
 		HttpPost httpPost = new HttpPost(Context.getAdministrationService().getGlobalProperty("patientengagement.postURL"));
 		httpPost.setEntity(new StringEntity(json));
 		httpPost.setHeader("Accept", "application/json");

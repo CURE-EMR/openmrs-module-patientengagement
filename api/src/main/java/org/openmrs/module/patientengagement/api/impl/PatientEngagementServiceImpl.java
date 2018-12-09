@@ -10,6 +10,8 @@
 package org.openmrs.module.patientengagement.api.impl;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -61,13 +63,15 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 	
 	/**
 	 * Gets a list of MessagingConfig objects from calling {@link #getMessagingConfig()}. Each
-	 * configuration object from that list is used to read the service configured, the number of days
-	 * before the appointment day and the actual message to send. We then call {@link #postMessage()} of
-	 * MessagingUtil to send the actual message
+	 * configuration object from that list is used to read the service configured, the number of
+	 * days before the appointment day and the actual message to send. We then call
+	 * {@link #postMessage()} of MessagingUtil to send the actual message
 	 */
 	
 	@Override
 	public void sendAppointmentReminders() throws AuthenticationException, ClientProtocolException, IOException {
+		
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 		
 		try {
 			List<MessagingConfig> configs = MessagingUtil.getMessagingConfig();
@@ -78,11 +82,12 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 				for (Appointment appointment : appointments) {
 					if (Days.daysBetween(new DateTime(new Date()), new DateTime(appointment.getStartDateTime())).getDays() == messagingConfig.getDaysBefore() - 1) {
 						phone = appointment.getPatient().getAttribute(Context.getAdministrationService().getGlobalProperty("patientengagement.phoneAttribute")).getValue();
-						if (phone != null && phone.length() > 0) {
+						if (phone != null && phone.length() > 0 && phone.equalsIgnoreCase("09289309869")) {
 							Patient p = appointment.getPatient();
 							String patientName = p.getFamilyName() + " " + p.getMiddleName() + " " + p.getGivenName();
-							Date appointmentDate = appointment.getDateFromStartDateTime();
-							String message = messagingConfig.getMessageText().replace("patientName", patientName).replace("appointmentDate", appointmentDate.toString());
+							Date appointmentDate = appointment.getStartDateTime();
+							String messageOne = messagingConfig.getMessageText().replace("patientName", patientName);
+							String message = messageOne.replace("appointmentDate", dateFormat.format(appointmentDate));
 							MessagingUtil.postMessage(phone, message);
 						}
 					}
