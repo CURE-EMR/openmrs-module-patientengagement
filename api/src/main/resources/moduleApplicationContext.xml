@@ -33,9 +33,7 @@
             <ref bean="transactionManager" />
         </property>
         <property name="target">
-            <bean class="org.openmrs.module.patientengagement.api.impl.PatientEngagementServiceImpl">
-                <property name="dao" ref="patientengagement.PatientEngagementDao" />
-            </bean>
+            <bean class="org.openmrs.module.patientengagement.api.impl.PatientEngagementServiceImpl"></bean>
         </property>
         <property name="preInterceptors">
             <ref bean="serviceInterceptors" />

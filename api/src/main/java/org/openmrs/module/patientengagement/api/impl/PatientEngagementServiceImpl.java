@@ -28,12 +28,9 @@ import org.openmrs.module.appointments.service.AppointmentServiceService;
 import org.openmrs.module.appointments.service.AppointmentsService;
 import org.openmrs.module.patientengagement.MessagingConfig;
 import org.openmrs.module.patientengagement.api.PatientEngagementService;
-import org.openmrs.module.patientengagement.api.dao.PatientEngagementDao;
 import org.openmrs.module.patientengagement.util.MessagingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Implementation of the main service of this module, which is exposed for other modules. See
@@ -41,54 +38,37 @@ import org.springframework.stereotype.Service;
  * 
  * @author Bailly RURANGIRWA
  */
-@Service("patientEngagementService")
 public class PatientEngagementServiceImpl extends BaseOpenmrsService implements PatientEngagementService {
 	
 	private static final Logger log = LoggerFactory.getLogger(PatientEngagementServiceImpl.class);
 	
-	@Autowired
-	AppointmentServiceService ass;
-	
-	@Autowired
-	AppointmentsService as;
-	
-	PatientEngagementDao dao;
-	
-	/**
-	 * Injected in moduleApplicationContext.xml
-	 */
-	public void setDao(PatientEngagementDao dao) {
-		this.dao = dao;
-	}
-	
 	/**
 	 * Gets a list of MessagingConfig objects from calling {@link #getMessagingConfig()}. Each
-	 * configuration object from that list is used to read the service configured, the number of
-	 * days before the appointment day and the actual message to send. We then call
-	 * {@link #postMessage()} of MessagingUtil to send the actual message
+	 * configuration object from that list is used to read the service configured, the number of days
+	 * before the appointment day and the actual message to send. We then call {@link #postMessage()} of
+	 * MessagingUtil to send the actual message
 	 */
 	
 	@Override
 	public void sendAppointmentReminders() throws AuthenticationException, ClientProtocolException, IOException {
-		
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 		
 		try {
 			List<MessagingConfig> configs = MessagingUtil.getMessagingConfig();
 			for (MessagingConfig messagingConfig : configs) {
-				AppointmentService service = ass.getAppointmentServiceByUuid(messagingConfig.getServiceUUID());
-				List<Appointment> appointments = as.getAllFutureAppointmentsForService(service);
+				AppointmentService service = Context.getService(AppointmentServiceService.class).getAppointmentServiceByUuid(messagingConfig.getServiceUUID());
+				List<Appointment> appointments = Context.getService(AppointmentsService.class).getAllFutureAppointmentsForService(service);
 				String phone = null;
 				for (Appointment appointment : appointments) {
 					if (Days.daysBetween(new DateTime(new Date()), new DateTime(appointment.getStartDateTime())).getDays() == messagingConfig.getDaysBefore() - 1) {
 						phone = appointment.getPatient().getAttribute(Context.getAdministrationService().getGlobalProperty("patientengagement.phoneAttribute")).getValue();
-						if (phone != null && phone.length() > 0 && phone.equalsIgnoreCase("09289309869")) {
+						if (phone != null && phone.length() > 0) {
 							Patient p = appointment.getPatient();
 							String patientName = p.getFamilyName() + " " + p.getMiddleName() + " " + p.getGivenName();
 							Date appointmentDate = appointment.getStartDateTime();
-							String messageOne = messagingConfig.getMessageText().replace("patientName", patientName);
-							String message = messageOne.replace("appointmentDate", dateFormat.format(appointmentDate));
-							MessagingUtil.postMessage(phone, message);
+							String messageAfterNameReplace = messagingConfig.getMessageText().replace("patientName", patientName);
+							String messageAfterAppointmentDateReplace = messageAfterNameReplace.replace("appointmentDate", dateFormat.format(appointmentDate));
+							MessagingUtil.postMessage(phone, messageAfterAppointmentDateReplace);
 						}
 					}
 				}

@@ -69,6 +69,12 @@
 		<defaultValue></defaultValue>
 		<description>Name of the Person Attribute Type used to record phone contacts for patients during registration</description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>patientengagement.countryCode</property>
+		<defaultValue></defaultValue>
+		<description>Phone Country Code (eg. +251 For EThiopia or +63 For Philippines)</description>
+	</globalProperty>
 
 	<!-- <dwr> <allow> <create creator="new" javascript="DWRFormEntryService"> 
 		<param name="class" value="org.openmrs.module.@MODULE_ID@.web.DWRFormEntryService"/> 
