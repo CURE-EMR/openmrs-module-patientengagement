@@ -64,7 +64,7 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 						phone = appointment.getPatient().getAttribute(Context.getAdministrationService().getGlobalProperty("patientengagement.phoneAttribute")).getValue();
 						if (phone != null && phone.length() > 0) {
 							Patient p = appointment.getPatient();
-							String patientName = p.getFamilyName() + " " + p.getMiddleName() + " " + p.getGivenName();
+							String patientName = getPatientName(p);
 							Date appointmentDate = appointment.getStartDateTime();
 							String messageAfterNameReplace = messagingConfig.getMessageText().replace("patientName", patientName);
 							String messageAfterAppointmentDateReplace = messageAfterNameReplace.replace("appointmentDate", dateFormat.format(appointmentDate));
@@ -79,6 +79,16 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 			log.error("There was an error sending appointment reminders" + e);
 		}
 		
+	}
+	
+	public String getPatientName(Patient patient){
+		String patientName = "";
+		if(patient.getMiddleName() == null){
+			patientName = patient.getFamilyName() + " " +patient.getGivenName();
+		}else{
+			patientName = patient.getFamilyName() + " " + patient.getMiddleName() + " " + patient.getGivenName();
+		}
+		return patientName;
 	}
 	
 }
