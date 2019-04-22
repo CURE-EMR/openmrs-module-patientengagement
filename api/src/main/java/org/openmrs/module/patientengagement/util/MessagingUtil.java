@@ -10,6 +10,8 @@
 package org.openmrs.module.patientengagement.util;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.http.auth.AuthenticationException;
@@ -51,7 +53,13 @@ public class MessagingUtil {
 		
 		try {
 			
+			System.setProperty("file.encoding", "UTF-8");
+			Field charset = Charset.class.getDeclaredField("defaultCharset");
+			charset.setAccessible(true);
+			charset.set(null, null);
+			
 			String json = Context.getAdministrationService().getGlobalProperty("patientengagement.messagingConfig");
+			
 			list = mapper.readValue(json, new TypeReference<List<MessagingConfig>>() {});
 			
 		}
@@ -63,6 +71,22 @@ public class MessagingUtil {
 		}
 		catch (IOException e) {
 			log.error("There was an error parsing the JSON configuration string from patientengagement.messagingConfig global property: " + e);
+		}
+		catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return list;
 	}
@@ -77,11 +101,10 @@ public class MessagingUtil {
 	 * @throws AuthenticationException
 	 */
 	public static void postMessage(String phone, String messageText) throws ClientProtocolException, IOException, AuthenticationException {
-		
 		String countryCode = Context.getAdministrationService().getGlobalProperty("patientengagement.countryCode");
 		
 		String fixedPhoneNumber = phone.replaceFirst("0", countryCode);
-		String json = "{ \"urns\": [ \"tel:" + fixedPhoneNumber + "\"], \"text\": \"" + messageText + "\" }";
+		String json = "{ \"urns\": [ \"tel:" + fixedPhoneNumber + "\"], \"text\": \"" + new String(messageText.getBytes("UTF-8"), "ISO-8859-1") + "\" }";
 		HttpPost httpPost = new HttpPost(Context.getAdministrationService().getGlobalProperty("patientengagement.postURL"));
 		httpPost.setEntity(new StringEntity(json));
 		httpPost.setHeader("Accept", "application/json");

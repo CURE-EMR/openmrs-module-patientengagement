@@ -81,11 +81,11 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 		
 	}
 	
-	public String getPatientName(Patient patient){
+	public String getPatientName(Patient patient) {
 		String patientName = "";
-		if(patient.getMiddleName() == null){
-			patientName = patient.getFamilyName() + " " +patient.getGivenName();
-		}else{
+		if (patient.getMiddleName() == null) {
+			patientName = patient.getFamilyName() + " " + patient.getGivenName();
+		} else {
 			patientName = patient.getFamilyName() + " " + patient.getMiddleName() + " " + patient.getGivenName();
 		}
 		return patientName;
