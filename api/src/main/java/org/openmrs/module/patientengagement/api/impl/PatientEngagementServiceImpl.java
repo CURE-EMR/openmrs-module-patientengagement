@@ -23,8 +23,8 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.appointments.model.Appointment;
-import org.openmrs.module.appointments.model.AppointmentService;
-import org.openmrs.module.appointments.service.AppointmentServiceService;
+import org.openmrs.module.appointments.model.AppointmentServiceDefinition;
+import org.openmrs.module.appointments.service.AppointmentServiceDefinitionService;
 import org.openmrs.module.appointments.service.AppointmentsService;
 import org.openmrs.module.patientengagement.MessagingConfig;
 import org.openmrs.module.patientengagement.api.PatientEngagementService;
@@ -56,7 +56,7 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 		try {
 			List<MessagingConfig> configs = MessagingUtil.getMessagingConfig();
 			for (MessagingConfig messagingConfig : configs) {
-				AppointmentService service = Context.getService(AppointmentServiceService.class).getAppointmentServiceByUuid(messagingConfig.getServiceUUID());
+				AppointmentServiceDefinition service = Context.getService(AppointmentServiceDefinitionService.class).getAppointmentServiceByUuid(messagingConfig.getServiceUUID());
 				List<Appointment> appointments = Context.getService(AppointmentsService.class).getAllFutureAppointmentsForService(service);
 				String phone = null;
 				for (Appointment appointment : appointments) {

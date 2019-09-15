@@ -15,6 +15,7 @@ hs_err_pid*
 .classpath
 .idea
 .project
+target/*
 .settings/*
 api/.classpath
 api/.project
