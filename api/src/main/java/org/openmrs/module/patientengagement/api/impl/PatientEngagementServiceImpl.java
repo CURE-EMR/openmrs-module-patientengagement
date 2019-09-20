@@ -39,20 +39,20 @@ import org.slf4j.LoggerFactory;
  * @author Bailly RURANGIRWA
  */
 public class PatientEngagementServiceImpl extends BaseOpenmrsService implements PatientEngagementService {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(PatientEngagementServiceImpl.class);
-	
+
 	/**
 	 * Gets a list of MessagingConfig objects from calling {@link #getMessagingConfig()}. Each
 	 * configuration object from that list is used to read the service configured, the number of days
 	 * before the appointment day and the actual message to send. We then call {@link #postMessage()} of
 	 * MessagingUtil to send the actual message
 	 */
-	
+
 	@Override
 	public void sendAppointmentReminders() throws AuthenticationException, ClientProtocolException, IOException {
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-		
+
 		try {
 			List<MessagingConfig> configs = MessagingUtil.getMessagingConfig();
 			for (MessagingConfig messagingConfig : configs) {
@@ -72,15 +72,15 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 						}
 					}
 				}
-				
+
 			}
 		}
 		catch (Exception e) {
 			log.error("There was an error sending appointment reminders" + e);
 		}
-		
+
 	}
-	
+
 	public String getPatientName(Patient patient) {
 		String patientName = "";
 		if (patient.getMiddleName() == null) {
@@ -90,5 +90,44 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 		}
 		return patientName;
 	}
-	
+
+	@Override
+	public void sendKenyaBirthdayWishes() throws AuthenticationException, ClientProtocolException, IOException {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String today = dateFormat.format(new Date());
+		String phoneToSendTo = null;
+		String birthday = "";
+		try {
+			for (Patient patient : Context.getPatientService().getAllPatients()) {
+				birthday = dateFormat.format(patient.getBirthdate());
+				if(birthday != null && birthday.substring(birthday.indexOf("-") + 1).equalsIgnoreCase(today.substring(today.indexOf("-")+1 ))) {
+					phoneToSendTo = getPreferredPhone(patient);
+					if (phoneToSendTo != null && phoneToSendTo.length() > 2) {
+						String patientName = getPatientName(patient);
+						String messageAfterNameReplace = Context.getAdministrationService().getGlobalProperty("patientengagement.birthdayWishes").replace("patientName", patientName);
+						MessagingUtil.postBirthdayWishes(phoneToSendTo, messageAfterNameReplace);
+					}
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	public String getPreferredPhone(Patient patient) {
+		String phoneToSendTo = "";
+		try {
+			if (patient.getPerson().getAttribute("patientPhoneNumber").getValue() != null) {
+				phoneToSendTo = patient.getPerson().getAttribute("patientPhoneNumber").getValue();
+			} else {
+				phoneToSendTo = patient.getPerson().getAttribute("firstNextOfKinPhone").getValue();
+			}		
+			if(phoneToSendTo == null || phoneToSendTo.length() <= 1) {
+				phoneToSendTo = patient.getPerson().getAttribute("secondNextOfKinPhone").getValue();
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return phoneToSendTo;
+	}
 }

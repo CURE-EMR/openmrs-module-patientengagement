@@ -24,4 +24,5 @@ import org.openmrs.api.OpenmrsService;
 public interface PatientEngagementService extends OpenmrsService {
 	
 	void sendAppointmentReminders() throws AuthenticationException, ClientProtocolException, IOException;
+	void sendKenyaBirthdayWishes() throws AuthenticationException, ClientProtocolException, IOException;
 }
