@@ -7,13 +7,11 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.module.patientengagement.api;
+package org.openmrs.module.patientengagement.dao;
 
-import java.io.IOException;
+import java.util.List;
 
-import org.apache.http.auth.AuthenticationException;
-import org.apache.http.client.ClientProtocolException;
-import org.openmrs.api.OpenmrsService;
+import org.openmrs.Person;
 
 /**
  * The main service of this module, which is exposed for other modules. See
@@ -21,8 +19,7 @@ import org.openmrs.api.OpenmrsService;
  * 
  * @author Bailly RURANGIRWA
  */
-public interface PatientEngagementService extends OpenmrsService {
+public interface PatientEngagementDao {
 	
-	void sendAppointmentReminders() throws AuthenticationException, ClientProtocolException, IOException;
-	void sendKenyaBirthdayWishes() throws AuthenticationException, ClientProtocolException, IOException;
+	public List<Person> getActivePatientWithBithDayToday();
 }

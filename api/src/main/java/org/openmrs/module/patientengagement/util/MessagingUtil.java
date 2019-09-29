@@ -37,9 +37,9 @@ import org.slf4j.LoggerFactory;
  * @author Bailly RURANGIRWA
  */
 public class MessagingUtil {
-
+	
 	private static final Logger log = LoggerFactory.getLogger(MessagingUtil.class);
-
+	
 	/**
 	 * Reads configuration for sending appointment reminders form "patientengagement.messagingConfig"
 	 * global property and creates a list of MessagingConfig instances
@@ -47,21 +47,21 @@ public class MessagingUtil {
 	 * @return a list of MessagingConfig objects
 	 */
 	public static List<MessagingConfig> getMessagingConfig() {
-
+		
 		List<MessagingConfig> list = null;
 		ObjectMapper mapper = new ObjectMapper();
-
+		
 		try {
-
+			
 			System.setProperty("file.encoding", "UTF-8");
 			Field charset = Charset.class.getDeclaredField("defaultCharset");
 			charset.setAccessible(true);
 			charset.set(null, null);
-
+			
 			String json = Context.getAdministrationService().getGlobalProperty("patientengagement.messagingConfig");
-
+			
 			list = mapper.readValue(json, new TypeReference<List<MessagingConfig>>() {});
-
+			
 		}
 		catch (JsonGenerationException e) {
 			log.error("There was an error parsing the JSON configuration string from patientengagement.messagingConfig global property: " + e);
@@ -90,7 +90,7 @@ public class MessagingUtil {
 		}
 		return list;
 	}
-
+	
 	/**
 	 * Creates a JSON post request to a configured URL from "patientengagement.postURL" global property.
 	 * 
@@ -102,7 +102,7 @@ public class MessagingUtil {
 	 */
 	public static void postMessage(String phone, String messageText) throws ClientProtocolException, IOException, AuthenticationException {
 		String countryCode = Context.getAdministrationService().getGlobalProperty("patientengagement.countryCode");
-
+		
 		String fixedPhoneNumber = phone.replaceFirst("0", countryCode);
 		String json = "{ \"urns\": [ \"tel:" + fixedPhoneNumber + "\"], \"text\": \"" + new String(messageText.getBytes("UTF-8"), "ISO-8859-1") + "\" }";
 		HttpPost httpPost = new HttpPost(Context.getAdministrationService().getGlobalProperty("patientengagement.postURL"));
@@ -110,21 +110,21 @@ public class MessagingUtil {
 		httpPost.setHeader("Accept", "application/json");
 		httpPost.setHeader("Content-type", "application/json");
 		httpPost.setHeader("Authorization", Context.getAdministrationService().getGlobalProperty("patientengagement.Authorization"));
-
+		
 		CloseableHttpClient client = HttpClients.createDefault();
 		client.execute(httpPost);
 		client.close();
 	}
-
+	
 	public static void postBirthdayWishes(String phone, String messageText) throws ClientProtocolException, IOException, AuthenticationException {
 		String countryCode = Context.getAdministrationService().getGlobalProperty("patientengagement.countryCode");
-        
-		String fixedPhoneNumber ="";
-		if(Character.compare(phone.charAt(0), '0') == 0) {
+		
+		String fixedPhoneNumber = "";
+		if (Character.compare(phone.charAt(0), '0') == 0) {
 			fixedPhoneNumber = phone.replaceFirst("0", countryCode);
 		}
-		if(Character.compare(phone.charAt(0), '7') == 0) {
-			fixedPhoneNumber = phone.replaceFirst("7", countryCode+"7");
+		if (Character.compare(phone.charAt(0), '7') == 0) {
+			fixedPhoneNumber = phone.replaceFirst("7", countryCode + "7");
 		}
 		String json = "{ \"urns\": [ \"tel:" + fixedPhoneNumber + "\"], \"text\": \"" + new String(messageText.getBytes("UTF-8"), "ISO-8859-1") + "\" }";
 		HttpPost httpPost = new HttpPost(Context.getAdministrationService().getGlobalProperty("patientengagement.postURL"));
@@ -132,7 +132,7 @@ public class MessagingUtil {
 		httpPost.setHeader("Accept", "application/json");
 		httpPost.setHeader("Content-type", "application/json");
 		httpPost.setHeader("Authorization", Context.getAdministrationService().getGlobalProperty("patientengagement.Authorization"));
-
+		
 		CloseableHttpClient client = HttpClients.createDefault();
 		client.execute(httpPost);
 		client.close();

@@ -7,7 +7,7 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.module.patientengagement.api.impl;
+package org.openmrs.module.patientengagement.service.impl;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -20,6 +20,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.appointments.model.Appointment;
@@ -27,10 +28,12 @@ import org.openmrs.module.appointments.model.AppointmentServiceDefinition;
 import org.openmrs.module.appointments.service.AppointmentServiceDefinitionService;
 import org.openmrs.module.appointments.service.AppointmentsService;
 import org.openmrs.module.patientengagement.MessagingConfig;
-import org.openmrs.module.patientengagement.api.PatientEngagementService;
+import org.openmrs.module.patientengagement.dao.PatientEngagementDao;
+import org.openmrs.module.patientengagement.service.PatientEngagementService;
 import org.openmrs.module.patientengagement.util.MessagingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of the main service of this module, which is exposed for other modules. See
@@ -38,21 +41,28 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Bailly RURANGIRWA
  */
+@Transactional
 public class PatientEngagementServiceImpl extends BaseOpenmrsService implements PatientEngagementService {
-
+	
 	private static final Logger log = LoggerFactory.getLogger(PatientEngagementServiceImpl.class);
-
+	
+	PatientEngagementDao patientEngagementDao;
+	
+	public void setPatientEngagementDao(PatientEngagementDao patientEngagementDao) {
+		this.patientEngagementDao = patientEngagementDao;
+	}
+	
 	/**
 	 * Gets a list of MessagingConfig objects from calling {@link #getMessagingConfig()}. Each
 	 * configuration object from that list is used to read the service configured, the number of days
 	 * before the appointment day and the actual message to send. We then call {@link #postMessage()} of
 	 * MessagingUtil to send the actual message
 	 */
-
+	
 	@Override
 	public void sendAppointmentReminders() throws AuthenticationException, ClientProtocolException, IOException {
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-
+		
 		try {
 			List<MessagingConfig> configs = MessagingUtil.getMessagingConfig();
 			for (MessagingConfig messagingConfig : configs) {
@@ -72,15 +82,15 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 						}
 					}
 				}
-
+				
 			}
 		}
 		catch (Exception e) {
 			log.error("There was an error sending appointment reminders" + e);
 		}
-
+		
 	}
-
+	
 	public String getPatientName(Patient patient) {
 		String patientName = "";
 		if (patient.getMiddleName() == null) {
@@ -90,7 +100,7 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 		}
 		return patientName;
 	}
-
+	
 	@Override
 	public void sendKenyaBirthdayWishes() throws AuthenticationException, ClientProtocolException, IOException {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -100,7 +110,7 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 		try {
 			for (Patient patient : Context.getPatientService().getAllPatients()) {
 				birthday = dateFormat.format(patient.getBirthdate());
-				if(birthday != null && birthday.substring(birthday.indexOf("-") + 1).equalsIgnoreCase(today.substring(today.indexOf("-")+1 ))) {
+				if (birthday != null && birthday.substring(birthday.indexOf("-") + 1).equalsIgnoreCase(today.substring(today.indexOf("-") + 1))) {
 					phoneToSendTo = getPreferredPhone(patient);
 					if (phoneToSendTo != null && phoneToSendTo.length() > 2) {
 						String patientName = getPatientName(patient);
@@ -109,11 +119,12 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 					}
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			// TODO: handle exception
 		}
 	}
-
+	
 	public String getPreferredPhone(Patient patient) {
 		String phoneToSendTo = "";
 		try {
@@ -121,13 +132,19 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 				phoneToSendTo = patient.getPerson().getAttribute("patientPhoneNumber").getValue();
 			} else {
 				phoneToSendTo = patient.getPerson().getAttribute("firstNextOfKinPhone").getValue();
-			}		
-			if(phoneToSendTo == null || phoneToSendTo.length() <= 1) {
+			}
+			if (phoneToSendTo == null || phoneToSendTo.length() <= 1) {
 				phoneToSendTo = patient.getPerson().getAttribute("secondNextOfKinPhone").getValue();
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			// TODO: handle exception
 		}
 		return phoneToSendTo;
+	}
+	
+	@Override
+	public List<Person> getActivePatientWithBithDayToday() {
+		return patientEngagementDao.getActivePatientWithBithDayToday();
 	}
 }

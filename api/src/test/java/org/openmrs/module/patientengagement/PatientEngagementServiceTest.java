@@ -12,7 +12,7 @@ package org.openmrs.module.patientengagement;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-import org.openmrs.module.patientengagement.api.impl.PatientEngagementServiceImpl;
+import org.openmrs.module.patientengagement.service.impl.PatientEngagementServiceImpl;
 
 /**
  * This is a unit test, which verifies logic in PatientEngagementService. It doesn't extend

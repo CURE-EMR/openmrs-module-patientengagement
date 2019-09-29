@@ -25,21 +25,37 @@
 
     <context:component-scan base-package="org.openmrs.module.patientengagement" />
 
-    <!-- Wraps PatientEngagementService methods in DB transactions and OpenMRS interceptors,
-    which set audit info like dateCreated, changedBy, etc.-->
-    <bean id="patientengagement.PatientEngagementService"
-            class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.api.AdministrationService</value>
+                <ref bean="administrationService"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="patientEngagementService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
         <property name="transactionManager">
-            <ref bean="transactionManager" />
+            <ref bean="transactionManager"/>
         </property>
         <property name="target">
-            <bean class="org.openmrs.module.patientengagement.api.impl.PatientEngagementServiceImpl"></bean>
+            <bean class="org.openmrs.module.patientengagement.service.impl.PatientEngagementServiceImpl">
+                <property name="patientEngagementDao">
+                    <ref bean="patientEngagementDao"/>
+                </property>
+           </bean>
         </property>
         <property name="preInterceptors">
-            <ref bean="serviceInterceptors" />
+            <ref bean="serviceInterceptors"/>
         </property>
         <property name="transactionAttributeSource">
-            <ref bean="transactionAttributeSource" />
+            <ref bean="transactionAttributeSource"/>
+        </property>
+    </bean>
+
+    <bean id="patientEngagementDao" class="org.openmrs.module.patientengagement.dao.impl.HibernatePatientEngagementDao">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"/>
         </property>
     </bean>
 
@@ -48,8 +64,8 @@
     <bean parent="serviceContext">
         <property name="moduleService">
             <list>
-                <value>org.openmrs.module.patientengagement.api.PatientEngagementService</value>
-                <ref bean="patientengagement.PatientEngagementService" />
+                <value>org.openmrs.module.patientengagement.service.PatientEngagementService</value>
+                <ref bean="patientEngagementService" />
             </list>
         </property>
     </bean>

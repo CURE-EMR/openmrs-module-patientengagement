@@ -10,7 +10,7 @@
 package org.openmrs.module.patientengagement.scheduler.tasks;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.patientengagement.api.PatientEngagementService;
+import org.openmrs.module.patientengagement.service.PatientEngagementService;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
