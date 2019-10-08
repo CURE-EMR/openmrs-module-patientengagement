@@ -19,6 +19,7 @@ import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.ClientProtocolException;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
@@ -74,7 +75,7 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 						phone = appointment.getPatient().getAttribute(Context.getAdministrationService().getGlobalProperty("patientengagement.phoneAttribute")).getValue();
 						if (phone != null && phone.length() > 0) {
 							Patient p = appointment.getPatient();
-							String patientName = getPatientName(p);
+							String patientName = getPersonName(p);
 							Date appointmentDate = appointment.getStartDateTime();
 							String messageAfterNameReplace = messagingConfig.getMessageText().replace("patientName", patientName);
 							String messageAfterAppointmentDateReplace = messageAfterNameReplace.replace("appointmentDate", dateFormat.format(appointmentDate));
@@ -91,60 +92,56 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 		
 	}
 	
-	public String getPatientName(Patient patient) {
+	public String getPersonName(Person person) {
 		String patientName = "";
-		if (patient.getMiddleName() == null) {
-			patientName = patient.getFamilyName() + " " + patient.getGivenName();
+		if (person.getMiddleName() == null) {
+			patientName = person.getFamilyName() + " " + person.getGivenName();
 		} else {
-			patientName = patient.getFamilyName() + " " + patient.getMiddleName() + " " + patient.getGivenName();
+			patientName = person.getFamilyName() + " " + person.getMiddleName() + " " + person.getGivenName();
 		}
 		return patientName;
 	}
 	
 	@Override
 	public void sendKenyaBirthdayWishes() throws AuthenticationException, ClientProtocolException, IOException {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		String today = dateFormat.format(new Date());
 		String phoneToSendTo = null;
-		String birthday = "";
 		try {
-			for (Patient patient : Context.getPatientService().getAllPatients()) {
-				birthday = dateFormat.format(patient.getBirthdate());
-				if (birthday != null && birthday.substring(birthday.indexOf("-") + 1).equalsIgnoreCase(today.substring(today.indexOf("-") + 1))) {
-					phoneToSendTo = getPreferredPhone(patient);
-					if (phoneToSendTo != null && phoneToSendTo.length() > 2) {
-						String patientName = getPatientName(patient);
-						String messageAfterNameReplace = Context.getAdministrationService().getGlobalProperty("patientengagement.birthdayWishes").replace("patientName", patientName);
-						MessagingUtil.postBirthdayWishes(phoneToSendTo, messageAfterNameReplace);
-					}
+			for (Encounter encounter : getRecentEncounterForActivePatientsWithBithDayToday(180)) {
+				Person person = encounter.getPatient().getPerson();
+				phoneToSendTo = getPreferredPhone(person);
+				if (phoneToSendTo != null && phoneToSendTo.length() > 2) {
+					String patientName = getPersonName(person);
+					String messageAfterNameReplace = Context.getAdministrationService().getGlobalProperty("patientengagement.birthdayWishes").replace("patientName", patientName);
+					MessagingUtil.postBirthdayWishes(phoneToSendTo, messageAfterNameReplace);
 				}
 			}
 		}
 		catch (Exception e) {
-			// TODO: handle exception
+			log.error("There was an error sending birthday wishes" + e);
 		}
 	}
 	
-	public String getPreferredPhone(Patient patient) {
-		String phoneToSendTo = "";
+	public String getPreferredPhone(Person person) {
+		String phoneToSendTo = null;
 		try {
-			if (patient.getPerson().getAttribute("patientPhoneNumber").getValue() != null) {
-				phoneToSendTo = patient.getPerson().getAttribute("patientPhoneNumber").getValue();
-			} else {
-				phoneToSendTo = patient.getPerson().getAttribute("firstNextOfKinPhone").getValue();
+			if (person.getAttribute("patientPhoneNumber") != null) {
+				phoneToSendTo = person.getAttribute("patientPhoneNumber").getValue();
 			}
-			if (phoneToSendTo == null || phoneToSendTo.length() <= 1) {
-				phoneToSendTo = patient.getPerson().getAttribute("secondNextOfKinPhone").getValue();
+			if (phoneToSendTo == null && person.getAttribute("firstNextOfKinPhone") != null) {
+				phoneToSendTo = person.getAttribute("firstNextOfKinPhone").getValue();
+			}
+			if (phoneToSendTo == null && person.getAttribute("secondNextOfKinPhone") != null) {
+				phoneToSendTo = person.getAttribute("secondNextOfKinPhone").getValue();
 			}
 		}
 		catch (Exception e) {
-			// TODO: handle exception
+			log.error("There was an error geting the patient's phone number" + e);
 		}
 		return phoneToSendTo;
 	}
 	
 	@Override
-	public List<Person> getActivePatientWithBithDayToday() {
-		return patientEngagementDao.getActivePatientWithBithDayToday();
+	public List<Encounter> getRecentEncounterForActivePatientsWithBithDayToday(int days) {
+		return patientEngagementDao.getRecentEncounterForActivePatientsWithBithDayToday(days);
 	}
 }

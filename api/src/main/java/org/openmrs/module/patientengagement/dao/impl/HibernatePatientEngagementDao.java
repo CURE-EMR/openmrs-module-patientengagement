@@ -10,15 +10,16 @@
 package org.openmrs.module.patientengagement.dao.impl;
 
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
-import org.openmrs.Person;
+import org.openmrs.Encounter;
 import org.openmrs.module.patientengagement.dao.PatientEngagementDao;
 
 /**
@@ -39,12 +40,16 @@ public class HibernatePatientEngagementDao implements PatientEngagementDao {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Person> getActivePatientWithBithDayToday() {
-		Session session = getCurrentSession();
-		Criteria cr = session.createCriteria(Person.class);
-		cr.add(Restrictions.like("birthdate", "2019-09-20"));
-		List<Person> personList = cr.list();
-		return personList;
+	public List<Encounter> getRecentEncounterForActivePatientsWithBithDayToday(int days) {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String today = dateFormat.format(new Date());
+		String birthdayMonthAndDay = today.substring(today.indexOf("-") + 1);
+		
+		String sql = "select * from encounter e, person p where e.patient_id = p.person_id and p.birthdate like '%" + birthdayMonthAndDay + "' and DATEDIFF(NOW(), e.date_created) < " + days + " group by patient_id";
+		SQLQuery query = getCurrentSession().createSQLQuery(sql);
+		query.addEntity(Encounter.class);
+		List<Encounter> results = query.list();
+		return results;
 	}
 	
 	private org.hibernate.Session getCurrentSession() {

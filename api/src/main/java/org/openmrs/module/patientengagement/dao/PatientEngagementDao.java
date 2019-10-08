@@ -11,7 +11,7 @@ package org.openmrs.module.patientengagement.dao;
 
 import java.util.List;
 
-import org.openmrs.Person;
+import org.openmrs.Encounter;
 
 /**
  * The main service of this module, which is exposed for other modules. See
@@ -21,5 +21,5 @@ import org.openmrs.Person;
  */
 public interface PatientEngagementDao {
 	
-	public List<Person> getActivePatientWithBithDayToday();
+	public List<Encounter> getRecentEncounterForActivePatientsWithBithDayToday(int days);
 }

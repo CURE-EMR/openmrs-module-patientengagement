@@ -53,6 +53,14 @@
 	</globalProperty>
 
 	<globalProperty>
+		<property>patientengagement.birthdayWishes</property>
+		<defaultValue></defaultValue>
+		<description>
+			The message to send as birthday wishes.
+		</description>
+	</globalProperty>
+	
+	<globalProperty>
 		<property>patientengagement.postURL</property>
 		<defaultValue></defaultValue>
 		<description>RapidPro URL to post to</description>

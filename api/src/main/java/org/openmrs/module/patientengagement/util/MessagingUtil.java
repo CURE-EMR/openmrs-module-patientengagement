@@ -118,7 +118,6 @@ public class MessagingUtil {
 	
 	public static void postBirthdayWishes(String phone, String messageText) throws ClientProtocolException, IOException, AuthenticationException {
 		String countryCode = Context.getAdministrationService().getGlobalProperty("patientengagement.countryCode");
-		
 		String fixedPhoneNumber = "";
 		if (Character.compare(phone.charAt(0), '0') == 0) {
 			fixedPhoneNumber = phone.replaceFirst("0", countryCode);

@@ -34,7 +34,7 @@ public class KenyaBirthdayWishesTask extends AbstractTask {
 			
 		}
 		catch (Exception e) {
-			log.error("Failed to send alert notifications", e);
+			log.error("Failed to send birthday wishes", e);
 		}
 	}
 	
