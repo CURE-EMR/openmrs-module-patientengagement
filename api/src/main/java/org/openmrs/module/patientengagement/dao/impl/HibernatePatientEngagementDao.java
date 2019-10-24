@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.openmrs.Encounter;
+import org.openmrs.module.operationtheater.api.model.SurgicalAppointment;
 import org.openmrs.module.patientengagement.dao.PatientEngagementDao;
 
 /**
@@ -50,6 +51,31 @@ public class HibernatePatientEngagementDao implements PatientEngagementDao {
 		query.addEntity(Encounter.class);
 		List<Encounter> results = query.list();
 		return results;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<SurgicalAppointment> getSurgicalAppointmentWithNoAttributes() {
+		String sql = "select * from surgical_appointment where surgical_appointment_id not in (select surgical_appointment_id from surgical_appointment_attribute where surgical_appointment_attribute_type_id in (13,14))";
+		SQLQuery query = getCurrentSession().createSQLQuery(sql);
+		query.addEntity(SurgicalAppointment.class);
+		List<SurgicalAppointment> results = query.list();
+		return results;
+	}
+	
+	public void createAttribute(SurgicalAppointment surgicalAppointment, int surgicalAppointmentAttributeType) {
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		String value = "";
+		if (surgicalAppointmentAttributeType == 13) {
+			value = surgicalAppointment.getPatient().getPerson().getGender();
+		}
+		
+		if (surgicalAppointmentAttributeType == 14) {
+			value = dateFormat.format(surgicalAppointment.getPatient().getPerson().getBirthdate());
+		}
+		
+		String sql = "insert into surgical_appointment_attribute (surgical_appointment_id, surgical_appointment_attribute_type_id, value, creator, date_created, uuid) values (" + surgicalAppointment.getId() + ", " + surgicalAppointmentAttributeType + ",'" + value + "', 4, NOW(), UUID())";
+		SQLQuery query = getCurrentSession().createSQLQuery(sql);
+		query.executeUpdate();
 	}
 	
 	private org.hibernate.Session getCurrentSession() {

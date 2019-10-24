@@ -16,6 +16,7 @@ import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.ClientProtocolException;
 import org.openmrs.Encounter;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.module.operationtheater.api.model.SurgicalAppointment;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -30,6 +31,11 @@ public interface PatientEngagementService extends OpenmrsService {
 	
 	void sendKenyaBirthdayWishes() throws AuthenticationException, ClientProtocolException, IOException;
 	
+	void addSurgicalAppointmentAttributes();
+	
 	@Transactional
 	public List<Encounter> getRecentEncounterForActivePatientsWithBithDayToday(int days);
+	
+	@Transactional
+	public List<SurgicalAppointment> getSurgicalAppointmentWithNoAttributes();
 }

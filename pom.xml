@@ -55,6 +55,7 @@
 	<properties>
 		<openmrsPlatformVersion>1.11.6</openmrsPlatformVersion>
 		<appointmentsVersion>1.2-SNAPSHOT</appointmentsVersion>
+		<operationtheaterVersion>1.2.1</operationtheaterVersion>
 	</properties>
 
 	<dependencies>
@@ -66,6 +67,14 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
+
+	<dependency>
+		<groupId>org.openmrs.module</groupId>
+		<artifactId>operationtheater-api</artifactId>
+		<version>${operationtheaterVersion}</version>
+		<type>jar</type>
+		<scope>provided</scope>
+	</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
 		<dependency>

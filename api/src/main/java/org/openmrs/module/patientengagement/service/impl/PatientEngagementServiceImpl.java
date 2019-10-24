@@ -28,6 +28,7 @@ import org.openmrs.module.appointments.model.Appointment;
 import org.openmrs.module.appointments.model.AppointmentServiceDefinition;
 import org.openmrs.module.appointments.service.AppointmentServiceDefinitionService;
 import org.openmrs.module.appointments.service.AppointmentsService;
+import org.openmrs.module.operationtheater.api.model.SurgicalAppointment;
 import org.openmrs.module.patientengagement.MessagingConfig;
 import org.openmrs.module.patientengagement.dao.PatientEngagementDao;
 import org.openmrs.module.patientengagement.service.PatientEngagementService;
@@ -121,6 +122,18 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 		}
 	}
 	
+	@Override
+	public void addSurgicalAppointmentAttributes() {
+		List<SurgicalAppointment> surgicalAppointments = getSurgicalAppointmentWithNoAttributes();
+		if (surgicalAppointments.size() > 0) {
+			for (SurgicalAppointment surgicalAppointment : surgicalAppointments) {
+				patientEngagementDao.createAttribute(surgicalAppointment, 13);
+				patientEngagementDao.createAttribute(surgicalAppointment, 14);
+			}
+		}
+		
+	}
+	
 	public String getPreferredPhone(Person person) {
 		String phoneToSendTo = null;
 		try {
@@ -143,5 +156,10 @@ public class PatientEngagementServiceImpl extends BaseOpenmrsService implements 
 	@Override
 	public List<Encounter> getRecentEncounterForActivePatientsWithBithDayToday(int days) {
 		return patientEngagementDao.getRecentEncounterForActivePatientsWithBithDayToday(days);
+	}
+	
+	@Override
+	public List<SurgicalAppointment> getSurgicalAppointmentWithNoAttributes() {
+		return patientEngagementDao.getSurgicalAppointmentWithNoAttributes();
 	}
 }

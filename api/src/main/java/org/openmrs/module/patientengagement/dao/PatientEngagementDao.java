@@ -12,6 +12,7 @@ package org.openmrs.module.patientengagement.dao;
 import java.util.List;
 
 import org.openmrs.Encounter;
+import org.openmrs.module.operationtheater.api.model.SurgicalAppointment;
 
 /**
  * The main service of this module, which is exposed for other modules. See
@@ -22,4 +23,8 @@ import org.openmrs.Encounter;
 public interface PatientEngagementDao {
 	
 	public List<Encounter> getRecentEncounterForActivePatientsWithBithDayToday(int days);
+	
+	public List<SurgicalAppointment> getSurgicalAppointmentWithNoAttributes();
+	
+	public void createAttribute(SurgicalAppointment surgicalAppointment, int surgicalAppointmentAttributeType);
 }
